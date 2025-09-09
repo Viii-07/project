@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Take Attendance - SmartAttend</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'hsl(221, 83%, 53%)',
+                        'primary-foreground': 'hsl(210, 40%, 98%)',
+                        secondary: 'hsl(210, 40%, 96%)',
+                        'secondary-foreground': 'hsl(222.2, 84%, 4.9%)',
+                        muted: 'hsl(210, 40%, 96%)',
+                        'muted-foreground': 'hsl(215.4, 16.3%, 46.9%)',
+                        accent: 'hsl(210, 40%, 96%)',
+                        'accent-foreground': 'hsl(222.2, 84%, 4.9%)',
+                        destructive: 'hsl(0, 84%, 60%)',
+                        'destructive-foreground': 'hsl(210, 40%, 98%)',
+                        border: 'hsl(214.3, 31.8%, 91.4%)',
+                        input: 'hsl(214.3, 31.8%, 91.4%)',
+                        ring: 'hsl(221, 83%, 53%)',
+                        background: 'hsl(0, 0%, 100%)',
+                        foreground: 'hsl(222.2, 84%, 4.9%)',
+                        card: 'hsl(0, 0%, 100%)',
+                        'card-foreground': 'hsl(222.2, 84%, 4.9%)',
+                        success: 'hsl(142, 76%, 36%)',
+                        warning: 'hsl(38, 92%, 50%)'
+                    },
+                    backgroundImage: {
+                        'gradient-primary': 'linear-gradient(135deg, hsl(221, 83%, 53%), hsl(221, 83%, 63%))',
+                        'gradient-hero': 'linear-gradient(135deg, hsl(221, 83%, 53%) 0%, hsl(221, 83%, 63%) 100%)'
+                    },
+                    boxShadow: {
+                        'elegant': '0 10px 30px -10px hsl(221, 83%, 53%, 0.3)',
+                        'card': '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .checkbox-wrapper {
+            position: relative;
+        }
+        .custom-checkbox {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid hsl(221, 83%, 53%);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .custom-checkbox:checked {
+            background-color: hsl(221, 83%, 53%);
+            border-color: hsl(221, 83%, 53%);
+        }
+        .custom-checkbox:checked::after {
+            content: '✓';
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .student-row {
+            transition: all 0.3s ease;
+        }
+        .student-row.present {
+            background-color: hsl(142, 76%, 36%, 0.1);
+            border-color: hsl(142, 76%, 36%, 0.3);
+        }
+        .student-row.absent {
+            background-color: hsl(0, 84%, 60%, 0.1);
+            border-color: hsl(0, 84%, 60%, 0.3);
+        }
+        .checkbox-container.present {
+            background-color: hsl(142, 76%, 36%, 0.2);
+        }
+        .checkbox-container.absent {
+            background-color: hsl(0, 84%, 60%, 0.2);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-background">
+    <!-- Header -->
+    <header class="bg-card border-b shadow-card">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <button onclick="window.location.href='/teacher-dashboard'" class="px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors flex items-center gap-2">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                        Back
+                    </button>
+                    <div>
+                        <h1 class="text-xl font-semibold">Take Attendance</h1>
+                        <p class="text-sm text-muted-foreground" id="sessionInfo">Loading...</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <div class="text-sm text-muted-foreground">
+                        <span class="font-medium">Time:</span> <span id="currentTime"></span>
+                    </div>
+                    <div id="gracePeriodTimer" class="hidden flex items-center gap-2 text-warning">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span id="countdownDisplay" class="font-mono"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-4 py-6">
+        <!-- Stats -->
+        <div class="grid gap-4 md:grid-cols-4 mb-6">
+            <div class="bg-card p-4 rounded-lg shadow-card">
+                <div class="flex items-center gap-2">
+                    <svg class="h-4 w-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    <div>
+                        <p class="text-sm text-muted-foreground">Total Students</p>
+                        <p class="text-2xl font-bold" id="totalCount">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-card p-4 rounded-lg shadow-card">
+                <div class="flex items-center gap-2">
+                    <svg class="h-4 w-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div>
+                        <p class="text-sm text-muted-foreground">Present</p>
+                        <p class="text-2xl font-bold text-success" id="presentCount">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-card p-4 rounded-lg shadow-card">
+                <div class="flex items-center gap-2">
+                    <svg class="h-4 w-4 text-destructive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div>
+                        <p class="text-sm text-muted-foreground">Absent</p>
+                        <p class="text-2xl font-bold text-destructive" id="absentCount">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-card p-4 rounded-lg shadow-card">
+                <div>
+                    <p class="text-sm text-muted-foreground">Attendance %</p>
+                    <p class="text-2xl font-bold text-primary" id="attendancePercentage">0%</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Banner -->
+        <div id="statusBanner" class="hidden mb-6 border border-success bg-success/5 p-4 rounded-lg">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <svg class="h-5 w-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div>
+                        <p class="font-medium text-success">Attendance Submitted Successfully</p>
+                        <p class="text-sm text-muted-foreground" id="statusMessage"></p>
+                    </div>
+                </div>
+                <button id="reAttemptBtn" onclick="handleReAttempt()" class="hidden px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors">
+                    Re-Attempt
+                </button>
+            </div>
+        </div>
+
+        <!-- Attendance Mode Banner -->
+        <div class="bg-card p-4 rounded-lg shadow-card mb-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="font-medium" id="modeTitle">Mode: Mark Presentees</p>
+                    <p class="text-sm text-muted-foreground" id="modeDescription">
+                        Check the boxes for students who are present
+                    </p>
+                </div>
+                <span class="px-3 py-1 bg-muted text-muted-foreground rounded-full text-sm" id="modeBadge">Present Mode</span>
+            </div>
+        </div>
+
+        <!-- Student List -->
+        <div class="bg-card rounded-xl shadow-card">
+            <div class="p-6 border-b border-border">
+                <h3 class="text-xl font-bold">Student List</h3>
+                <p class="text-muted-foreground" id="studentListDescription">Mark attendance for the class</p>
+            </div>
+            <div class="p-6">
+                <div class="space-y-3" id="studentList">
+                    <!-- Students will be loaded here -->
+                </div>
+
+                <div id="submitSection" class="mt-6 pt-6 border-t border-border">
+                    <button 
+                        onclick="handleSubmit()" 
+                        class="w-full bg-gradient-primary text-primary-foreground py-3 rounded-lg font-semibold shadow-elegant hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2"
+                    >
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                        </svg>
+                        Submit Attendance
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let sessionData = null;
+        let students = [];
+        let isSubmitted = false;
+        let countdown = 0;
+        let countdownInterval = null;
+
+        // Generate demo students
+        function generateStudents(className, section) {
+            const studentCount = 45;
+            const students = [];
+            const names = [
+                "Aarav Sharma", "Vivaan Gupta", "Aditya Patel", "Arjun Singh", "Reyansh Kumar",
+                "Priya Agarwal", "Ananya Joshi", "Diya Verma", "Sara Khan", "Ishita Mehta",
+                "Karan Reddy", "Rohan Nair", "Siddharth Rao", "Akash Jain", "Varun Tiwari",
+                "Meera Shah", "Riya Kapoor", "Shreya Pandey", "Kavya Malhotra", "Nia Bansal"
+            ];
+            
+            for (let i = 1; i <= studentCount; i++) {
+                const rollNumber = `${className.substring(0, 2).toUpperCase()}${section}${i.toString().padStart(3, '0')}`;
+                students.push({
+                    rollNumber: rollNumber,
+                    name: names[i % names.length] + ` ${i}`,
+                    isPresent: true
+                });
+            }
+            
+            return students;
+        }
+
+        // Update current time
+        function updateTime() {
+            const now = new Date();
+            const timeOptions = { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: true 
+            };
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-US', timeOptions);
+        }
+
+        // Update stats
+        function updateStats() {
+            const presentCount = students.filter(s => s.isPresent).length;
+            const absentCount = students.length - presentCount;
+            const percentage = Math.round((presentCount / students.length) * 100);
+            
+            document.getElementById('totalCount').textContent = students.length;
+            document.getElementById('presentCount').textContent = presentCount;
+            document.getElementById('absentCount').textContent = absentCount;
+            document.getElementById('attendancePercentage').textContent = percentage + '%';
+        }
+
+        // Render student list
+        function renderStudentList() {
+            const container = document.getElementById('studentList');
+            container.innerHTML = '';
+            
+            students.forEach(student => {
+                const isChecked = sessionData.attendanceMode === "presentees" 
+                    ? student.isPresent 
+                    : !student.isPresent;
+                
+                const row = document.createElement('div');
+                row.className = `student-row flex items-center justify-between p-3 rounded-lg border transition-colors ${
+                    student.isPresent ? 'present' : 'absent'
+                }`;
+                
+                row.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <div class="checkbox-container p-1 rounded-lg transition-colors ${
+                            student.isPresent ? 'present' : 'absent'
+                        }">
+                            <input 
+                                type="checkbox" 
+                                class="custom-checkbox" 
+                                ${isChecked ? 'checked' : ''}
+                                ${isSubmitted && countdown > 0 ? 'disabled' : ''}
+                                onchange="toggleStudentAttendance('${student.rollNumber}')"
+                            >
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-medium text-base">${student.rollNumber}</p>
+                            <p class="text-sm text-muted-foreground">${student.name}</p>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1 rounded-full text-sm ${
+                        student.isPresent 
+                            ? 'bg-success/10 text-success border border-success/20' 
+                            : 'bg-destructive text-destructive-foreground'
+                    }">
+                        ${student.isPresent ? 'Present' : 'Absent'}
+                    </span>
+                `;
+                
+                container.appendChild(row);
+            });
+        }
+
+        // Toggle student attendance
+        function toggleStudentAttendance(rollNumber) {
+            if (isSubmitted && countdown > 0) return;
+            
+            students = students.map(student => 
+                student.rollNumber === rollNumber 
+                    ? { ...student, isPresent: !student.isPresent }
+                    : student
+            );
+            
+            updateStats();
+            renderStudentList();
+        }
+
+        // Format time for countdown
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+        }
+
+        // Handle countdown
+        function startCountdown() {
+            countdown = 600; // 10 minutes
+            document.getElementById('gracePeriodTimer').classList.remove('hidden');
+            
+            countdownInterval = setInterval(() => {
+                countdown--;
+                document.getElementById('countdownDisplay').textContent = formatTime(countdown);
+                document.getElementById('statusMessage').textContent = 
+                    `Grace period: ${formatTime(countdown)} remaining to make changes`;
+                
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    document.getElementById('gracePeriodTimer').classList.add('hidden');
+                    document.getElementById('statusMessage').textContent = 
+                        "Grace period expired. Use re-attempt to make changes.";
+                    document.getElementById('reAttemptBtn').classList.remove('hidden');
+                    
+                    // Play alarm sound
+                    playAlarmSound();
+                }
+            }, 1000);
+        }
+
+        // Play alarm sound
+        function playAlarmSound() {
+            try {
+                const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBj2a3PCUeSt/KnnA7NZ+PQcfYLrqj2OGJQcufd7ux3AoBS6GzvLXiTYIGGe98+WdTgwPUarm3Ow=');
+                audio.play().catch(() => {});
+            } catch (e) {
+                // Fallback: show alert if audio fails
+                alert('Grace period has ended!');
+            }
+        }
+
+        // Handle submit
+        function handleSubmit() {
+            const presentCount = students.filter(s => s.isPresent).length;
+            const totalCount = students.length;
+            isSubmitted = true;
+            startCountdown();
+            document.getElementById('statusBanner').classList.remove('hidden');
+            document.getElementById('submitSection').classList.add('hidden');
+
+            // Prepare attendance data for backend
+            const attendanceData = {
+                teacher_id: sessionData.teacherId,
+                class_id: sessionData.classId, // You may need to set this in sessionData
+                period_no: sessionData.period,
+                date: new Date().toISOString().split('T')[0],
+                students: students.map(s => ({
+                    student_id: s.studentId, // You may need to set this in students
+                    status: s.isPresent ? 'Present' : 'Absent'
+                }))
+            };
+
+            // Send to backend
+            fetch('/api/attendance/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Add Authorization header if using JWT
+                },
+                body: JSON.stringify(attendanceData)
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.msg || 'Attendance submitted!');
+            })
+            .catch(() => {
+                alert('Error submitting attendance');
+            });
+
+            localStorage.setItem('lastAttendance', JSON.stringify(attendanceData));
+        }
+
+        // Handle re-attempt
+        function handleReAttempt() {
+            isSubmitted = false;
+            countdown = 0;
+            clearInterval(countdownInterval);
+            
+            document.getElementById('statusBanner').classList.add('hidden');
+            document.getElementById('gracePeriodTimer').classList.add('hidden');
+            document.getElementById('submitSection').classList.remove('hidden');
+            document.getElementById('reAttemptBtn').classList.add('hidden');
+            
+            renderStudentList();
+            alert('Re-attempt Enabled\nYou can now edit the attendance');
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = '/login';
+        }
+
+        // Initialize page
+        function initializePage() {
+            const storedSession = localStorage.getItem('attendanceSession');
+            if (!storedSession) {
+                window.location.href = 'teacher-dashboard.html';
+                return;
+            }
+            
+            sessionData = JSON.parse(storedSession);
+            students = generateStudents(sessionData.className, sessionData.section);
+            
+            // Update UI
+            document.getElementById('sessionInfo').textContent = 
+                `${sessionData.department} - ${sessionData.className} ${sessionData.section} - Period ${sessionData.period}`;
+            
+            if (sessionData.attendanceMode === 'presentees') {
+                document.getElementById('modeTitle').textContent = 'Mode: Mark Presentees';
+                document.getElementById('modeDescription').textContent = 'Check the boxes for students who are present';
+                document.getElementById('modeBadge').textContent = 'Present Mode';
+            } else {
+                document.getElementById('modeTitle').textContent = 'Mode: Mark Absentees';
+                document.getElementById('modeDescription').textContent = 'Check the boxes for students who are absent';
+                document.getElementById('modeBadge').textContent = 'Absent Mode';
+            }
+            
+            document.getElementById('studentListDescription').textContent = 
+                `Mark attendance for ${sessionData.className} ${sessionData.section}`;
+            
+            updateStats();
+            renderStudentList();
+            updateTime();
+            setInterval(updateTime, 1000);
+        }
+
+        // Start the application
+        initializePage();
+    </script>
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartAttend - Digital Attendance Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'hsl(221, 83%, 53%)',
+                        'primary-foreground': 'hsl(210, 40%, 98%)',
+                        secondary: 'hsl(210, 40%, 96%)',
+                        'secondary-foreground': 'hsl(222.2, 84%, 4.9%)',
+                        muted: 'hsl(210, 40%, 96%)',
+                        'muted-foreground': 'hsl(215.4, 16.3%, 46.9%)',
+                        accent: 'hsl(210, 40%, 96%)',
+                        'accent-foreground': 'hsl(222.2, 84%, 4.9%)',
+                        destructive: 'hsl(0, 84%, 60%)',
+                        'destructive-foreground': 'hsl(210, 40%, 98%)',
+                        border: 'hsl(214.3, 31.8%, 91.4%)',
+                        input: 'hsl(214.3, 31.8%, 91.4%)',
+                        ring: 'hsl(221, 83%, 53%)',
+                        background: 'hsl(0, 0%, 100%)',
+                        foreground: 'hsl(222.2, 84%, 4.9%)',
+                        card: 'hsl(0, 0%, 100%)',
+                        'card-foreground': 'hsl(222.2, 84%, 4.9%)',
+                        success: 'hsl(142, 76%, 36%)',
+                        warning: 'hsl(38, 92%, 50%)'
+                    },
+                    backgroundImage: {
+                        'gradient-primary': 'linear-gradient(135deg, hsl(221, 83%, 53%), hsl(221, 83%, 63%))',
+                        'gradient-hero': 'linear-gradient(135deg, hsl(221, 83%, 53%) 0%, hsl(221, 83%, 63%) 100%)'
+                    },
+                    boxShadow: {
+                        'elegant': '0 10px 30px -10px hsl(221, 83%, 53%, 0.3)',
+                        'card': '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .fade-in {
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .hover-scale {
+            transition: transform 0.3s ease;
+        }
+        .hover-scale:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-background">
+    <!-- Navigation -->
+    <nav class="bg-card border-b shadow-card">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="h-10 w-10 bg-gradient-primary rounded-lg flex items-center justify-center text-primary-foreground font-bold text-lg">
+                        SA
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-primary">SmartAttend</h1>
+                        <p class="text-xs text-muted-foreground">Digital Attendance Portal</p>
+                    </div>
+                </div>
+                <button onclick="window.location.href='/login'" class="bg-gradient-primary text-primary-foreground px-6 py-2 rounded-lg font-medium shadow-elegant hover:shadow-lg transition-all duration-300">
+                    Login
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <main class="flex-1">
+        <section class="bg-gradient-hero text-primary-foreground py-20 px-4">
+            <div class="container mx-auto text-center fade-in">
+                <h1 class="text-5xl font-bold mb-6">
+                    Smart Attendance Management
+                </h1>
+                <p class="text-xl mb-8 text-primary-foreground/90 max-w-2xl mx-auto">
+                    Streamline your educational institution's attendance tracking with our modern, 
+                    efficient digital portal designed for teachers and administrators.
+                </p>
+                <div class="flex gap-4 justify-center flex-wrap">
+                    <button onclick="window.location.href='/login'" class="bg-primary-foreground text-primary px-8 py-3 rounded-lg font-semibold shadow-elegant hover:shadow-lg transition-all duration-300 hover-scale">
+                        Get Started
+                    </button>
+                    <button class="border-2 border-primary-foreground text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:bg-primary-foreground hover:text-primary transition-all duration-300">
+                        Learn More
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="py-20 px-4">
+            <div class="container mx-auto">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-bold text-foreground mb-4">
+                        Powerful Features
+                    </h2>
+                    <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
+                        Everything you need to manage attendance efficiently and effectively
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Teacher Dashboard -->
+                    <div class="bg-card p-8 rounded-xl shadow-card hover:shadow-elegant transition-all duration-300 hover-scale">
+                        <div class="h-12 w-12 bg-gradient-primary rounded-lg flex items-center justify-center text-primary-foreground mb-6">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold text-foreground mb-3">Teacher Dashboard</h3>
+                        <p class="text-muted-foreground mb-4">
+                            Easy-to-use interface for teachers to mark attendance quickly and efficiently
+                        </p>
+                        <ul class="space-y-2 text-sm text-muted-foreground">
+                            <li class="flex items-center gap-2">
+                                <div class="h-1.5 w-1.5 bg-primary rounded-full"></div>
+                                Quick class selection
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <div class="h-1.5 w-1.5 bg-primary rounded-full"></div>
+                                Flexible attendance modes
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <div class="h-1.5 w-1.5 bg-primary rounded-full"></div>
+                                Grace period for corrections
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Admin Dashboard -->
+                    <div class="bg-card p-8 rounded-xl shadow-card hover:shadow-elegant transition-all duration-300 hover-scale">
+                        <div class="h-12 w-12 bg-gradient-primary rounded-lg flex items-center justify-center text-primary-foreground mb-6">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold text-foreground mb-3">Analytics & Reports</h3>
+                        <p class="text-muted-foreground mb-4">
+                            Comprehensive insights and detailed reporting for administrators
+                        </p>
+                        <ul class="space-y-2 text-sm text-muted-foreground">
+                            <li class="flex items-center gap-2">
+                                <div class="h-1.5 w-1.5 bg-primary rounded-full"></div>
+                                Real-time attendance tracking
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <div class="h-1.5 w-1.5 bg-primary rounded-full"></div>
+                                Monthly/yearly reports
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <div class="h-1.5 w-1.5 bg-primary rounded-full"></div>
+                                Export to Excel/PDF
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Student Management -->
+                    <div class="bg-card p-8 rounded-xl shadow-card hover:shadow-elegant transition-all duration-300 hover-scale">
+                        <div class="h-12 w-12 bg-gradient-primary rounded-lg flex items-center justify-center text-primary-foreground mb-6">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold text-foreground mb-3">Student Management</h3>
+                        <p class="text-muted-foreground mb-4">
+                            Complete student database management with easy administration
+                        </p>
+                        <ul class="space-y-2 text-sm text-muted-foreground">
+                            <li class="flex items-center gap-2">
+                                <div class="h-1.5 w-1.5 bg-primary rounded-full"></div>
+                                Add/Edit/Delete students
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <div class="h-1.5 w-1.5 bg-primary rounded-full"></div>
+                                Class-wise organization
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <div class="h-1.5 w-1.5 bg-primary rounded-full"></div>
+                                Bulk operations
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="bg-secondary py-20 px-4">
+            <div class="container mx-auto text-center">
+                <h2 class="text-4xl font-bold text-foreground mb-6">
+                    Ready to Transform Your Attendance Management?
+                </h2>
+                <p class="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+                    Join hundreds of educational institutions already using SmartAttend to streamline their operations.
+                </p>
+                <button onclick="window.location.href='/login'" class="bg-gradient-primary text-primary-foreground px-8 py-4 rounded-lg font-semibold text-lg shadow-elegant hover:shadow-lg transition-all duration-300 hover-scale">
+                    Start Using SmartAttend
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-card border-t py-12 px-4">
+        <div class="container mx-auto text-center">
+            <div class="flex items-center justify-center gap-3 mb-6">
+                <div class="h-8 w-8 bg-gradient-primary rounded-lg flex items-center justify-center text-primary-foreground font-bold">
+                    SA
+                </div>
+                <span class="text-lg font-bold text-primary">SmartAttend</span>
+            </div>
+            <p class="text-muted-foreground mb-4">
+                Digital Attendance Portal for Modern Educational Institutions
+            </p>
+            <p class="text-sm text-muted-foreground">
+                © 2024 SmartAttend. All rights reserved.
+            </p>
+        </div>
+    </footer>
+</body>
+</html>

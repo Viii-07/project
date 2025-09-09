@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - SmartAttend</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'hsl(221, 83%, 53%)',
+                        'primary-foreground': 'hsl(210, 40%, 98%)',
+                        secondary: 'hsl(210, 40%, 96%)',
+                        'secondary-foreground': 'hsl(222.2, 84%, 4.9%)',
+                        muted: 'hsl(210, 40%, 96%)',
+                        'muted-foreground': 'hsl(215.4, 16.3%, 46.9%)',
+                        accent: 'hsl(210, 40%, 96%)',
+                        'accent-foreground': 'hsl(222.2, 84%, 4.9%)',
+                        destructive: 'hsl(0, 84%, 60%)',
+                        'destructive-foreground': 'hsl(210, 40%, 98%)',
+                        border: 'hsl(214.3, 31.8%, 91.4%)',
+                        input: 'hsl(214.3, 31.8%, 91.4%)',
+                        ring: 'hsl(221, 83%, 53%)',
+                        background: 'hsl(0, 0%, 100%)',
+                        foreground: 'hsl(222.2, 84%, 4.9%)',
+                        card: 'hsl(0, 0%, 100%)',
+                        'card-foreground': 'hsl(222.2, 84%, 4.9%)',
+                        success: 'hsl(142, 76%, 36%)',
+                        warning: 'hsl(38, 92%, 50%)'
+                    },
+                    backgroundImage: {
+                        'gradient-primary': 'linear-gradient(135deg, hsl(221, 83%, 53%), hsl(221, 83%, 63%))',
+                        'gradient-hero': 'linear-gradient(135deg, hsl(221, 83%, 53%) 0%, hsl(221, 83%, 63%) 100%)'
+                    },
+                    boxShadow: {
+                        'elegant': '0 10px 30px -10px hsl(221, 83%, 53%, 0.3)',
+                        'card': '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen bg-background">
+    <!-- Navigation -->
+    <nav class="bg-card border-b shadow-card">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="h-10 w-10 bg-gradient-primary rounded-lg flex items-center justify-center text-primary-foreground font-bold text-lg">
+                        SA
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-primary">SmartAttend</h1>
+                        <p class="text-xs text-muted-foreground">Admin Dashboard</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button onclick="window.location.href='/student-management'" class="text-muted-foreground hover:text-foreground transition-colors">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                        </svg>
+                    </button>
+                    <div class="text-right">
+                        <p class="font-medium text-foreground" id="adminName">Principal Smith</p>
+                        <p class="text-sm text-muted-foreground">Administrator</p>
+                    </div>
+                    <button onclick="logout()" class="text-muted-foreground hover:text-foreground transition-colors">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-foreground mb-2">Admin Dashboard</h2>
+            <p class="text-muted-foreground">Monitor attendance, approve teachers, and generate reports</p>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <button onclick="showTeacherModal()" class="bg-blue-600 hover:bg-blue-700 text-white p-6 rounded-xl transition-colors text-center">
+                <svg class="h-8 w-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+                <p class="font-medium">Manage Teachers</p>
+            </button>
+            <button onclick="generateReport('all')" class="bg-green-600 hover:bg-green-700 text-white p-6 rounded-xl transition-colors text-center">
+                <svg class="h-8 w-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                <p class="font-medium">View Reports</p>
+            </button>
+            <button onclick="alert('Analytics feature')" class="bg-purple-600 hover:bg-purple-700 text-white p-6 rounded-xl transition-colors text-center">
+                <svg class="h-8 w-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                <p class="font-medium">Analytics</p>
+            </button>
+            <button onclick="window.location.href='/student-management'" class="bg-orange-600 hover:bg-orange-700 text-white p-6 rounded-xl transition-colors text-center">
+                <svg class="h-8 w-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                </svg>
+                <p class="font-medium">Student Management</p>
+            </button>
+        </div>
+
+        <!-- Day-wise Attendance Summary -->
+        <div class="bg-card rounded-xl shadow-card p-8 mb-8">
+            <h3 class="text-2xl font-bold text-foreground mb-6">Day-wise Attendance Summary</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-muted">
+                        <tr>
+                            <th class="text-left p-4 font-medium text-foreground">Date</th>
+                            <th class="text-left p-4 font-medium text-foreground">Total Classes</th>
+                            <th class="text-left p-4 font-medium text-foreground">Attendance Taken</th>
+                            <th class="text-left p-4 font-medium text-foreground">Average Attendance</th>
+                            <th class="text-left p-4 font-medium text-foreground">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendanceSummaryTable">
+                        <tr class="border-b border-border hover:bg-muted/50">
+                            <td class="p-4">2024-01-15</td>
+                            <td class="p-4">42</td>
+                            <td class="p-4">38</td>
+                            <td class="p-4">87%</td>
+                            <td class="p-4"><span class="bg-green-500/20 text-green-600 px-2 py-1 rounded text-sm">Complete</span></td>
+                        </tr>
+                        <tr class="border-b border-border hover:bg-muted/50">
+                            <td class="p-4">2024-01-14</td>
+                            <td class="p-4">42</td>
+                            <td class="p-4">42</td>
+                            <td class="p-4">89%</td>
+                            <td class="p-4"><span class="bg-green-500/20 text-green-600 px-2 py-1 rounded text-sm">Complete</span></td>
+                        </tr>
+                        <tr class="border-b border-border hover:bg-muted/50">
+                            <td class="p-4">2024-01-13</td>
+                            <td class="p-4">42</td>
+                            <td class="p-4">40</td>
+                            <td class="p-4">85%</td>
+                            <td class="p-4"><span class="bg-yellow-500/20 text-yellow-600 px-2 py-1 rounded text-sm">Partial</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
+            <div class="bg-card p-6 rounded-xl shadow-card">
+                <div class="flex items-center gap-4">
+                    <div class="h-12 w-12 bg-primary/20 rounded-lg flex items-center justify-center text-primary">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-sm text-muted-foreground">Total Students</p>
+                        <p class="text-2xl font-bold text-foreground">1,247</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-card p-6 rounded-xl shadow-card">
+                <div class="flex items-center gap-4">
+                    <div class="h-12 w-12 bg-success/20 rounded-lg flex items-center justify-center text-success">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-sm text-muted-foreground">Avg Attendance</p>
+                        <p class="text-2xl font-bold text-success">87.3%</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-card p-6 rounded-xl shadow-card">
+                <div class="flex items-center gap-4">
+                    <div class="h-12 w-12 bg-warning/20 rounded-lg flex items-center justify-center text-warning">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-sm text-muted-foreground">Active Teachers</p>
+                        <p class="text-2xl font-bold text-foreground">42</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-card p-6 rounded-xl shadow-card">
+                <div class="flex items-center gap-4">
+                    <div class="h-12 w-12 bg-destructive/20 rounded-lg flex items-center justify-center text-destructive">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-sm text-muted-foreground">Departments</p>
+                        <p class="text-2xl font-bold text-foreground">7</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid gap-8 lg:grid-cols-2 mb-8">
+            <!-- Attendance Trend Chart -->
+            <div class="bg-card p-6 rounded-xl shadow-card">
+                <div class="mb-6">
+                    <h3 class="text-xl font-bold text-foreground mb-2">Attendance Trend</h3>
+                    <p class="text-muted-foreground">Weekly attendance percentage overview</p>
+                </div>
+                <div class="h-80">
+                    <canvas id="attendanceTrendChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Department Wise Attendance -->
+            <div class="bg-card p-6 rounded-xl shadow-card">
+                <div class="mb-6">
+                    <h3 class="text-xl font-bold text-foreground mb-2">Department Wise Attendance</h3>
+                    <p class="text-muted-foreground">Current month attendance by department</p>
+                </div>
+                <div class="h-80">
+                    <canvas id="departmentChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports Section -->
+        <div class="bg-card rounded-xl shadow-card p-8 mb-8">
+            <div class="mb-6">
+                <h3 class="text-2xl font-bold text-foreground mb-2">Generate Reports</h3>
+                <p class="text-muted-foreground">Export attendance data and analytics</p>
+            </div>
+            <div class="mb-4 flex gap-4 items-end">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Date</label>
+                    <input type="date" id="reportDate" class="border px-3 py-2 rounded-lg" value="2024-01-15">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Class</label>
+                    <select id="reportClass" class="border px-3 py-2 rounded-lg"></select>
+                </div>
+                <button onclick="viewAttendanceReport()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">View Attendance</button>
+                <button id="downloadBtn" onclick="downloadAttendanceReport()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg hidden">Download Report</button>
+            </div>
+            <div id="attendanceReportDetails" class="mt-6"></div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="bg-card rounded-xl shadow-card p-8">
+            <div class="mb-6">
+                <h3 class="text-xl font-bold text-foreground mb-2">Recent Activity</h3>
+                <p class="text-muted-foreground">Latest attendance submissions and system activity</p>
+            </div>
+
+            <div class="space-y-4">
+                <div class="flex items-center justify-between p-4 bg-muted rounded-lg">
+                    <div class="flex items-center gap-4">
+                        <div class="h-10 w-10 bg-success/20 rounded-lg flex items-center justify-center text-success">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="font-medium text-foreground">Dr. Sarah Johnson submitted attendance</p>
+                            <p class="text-sm text-muted-foreground">Computer Science - 3rd Year A • Period 3</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-foreground">42/45 Present</p>
+                        <p class="text-xs text-muted-foreground">2 mins ago</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between p-4 bg-muted rounded-lg">
+                    <div class="flex items-center gap-4">
+                        <div class="h-10 w-10 bg-success/20 rounded-lg flex items-center justify-center text-success">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="font-medium text-foreground">Prof. Michael Brown submitted attendance</p>
+                            <p class="text-sm text-muted-foreground">Mechanical - 2nd Year B • Period 2</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-foreground">38/40 Present</p>
+                        <p class="text-xs text-muted-foreground">15 mins ago</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Teacher List Modal -->
+    <div id="teacherModal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
+      <div class="bg-white rounded-xl p-8 w-full max-w-lg shadow-lg">
+        <h3 class="text-xl font-bold mb-4">Teacher List</h3>
+        <div id="teacherList" class="space-y-2"></div>
+        <button onclick="closeTeacherModal()" class="mt-6 px-4 py-2 bg-primary text-white rounded-lg">Close</button>
+      </div>
+    </div>
+
+    {% if get_flashed_messages() %}
+      <ul class="text-red-600 mb-4">
+        {% for message in get_flashed_messages() %}
+          <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <script src="shared-script.js"></script>
+    <script>
+        // Generate reports function
+        function generateReport(type) {
+            // Fetch previous attendance data for 'all' or 'daily' report
+            if (type === 'all' || type === 'daily') {
+                // Example: Use today's date for daily report
+                const reportDate = new Date().toISOString().split('T')[0];
+                fetch(`/api/admin/attendance/${reportDate}/summary`)
+                    .then(res => res.json())
+                    .then(summary => {
+                        if (summary.length > 0) {
+                            // Pick first class for demo, or let user select
+                            const classId = summary[0].class_id;
+                            fetch(`/api/admin/attendance/${classId}/${reportDate}/details`)
+                                .then(res => res.json())
+                                .then(details => {
+                                    // Store attendance details in localStorage
+                                    localStorage.setItem('reportAttendance', JSON.stringify({date: reportDate, classId, details}));
+                                    window.location.href = '/attendance-form';
+                                });
+                        } else {
+                            alert('No attendance data found for this date.');
+                        }
+                    });
+                return;
+            }
+            const reports = {
+                'daily': 'Daily Attendance Report - ' + new Date().toLocaleDateString(),
+                'weekly': 'Weekly Attendance Report - Week of ' + new Date().toLocaleDateString(),
+                'monthly': 'Monthly Attendance Report - ' + new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+                'custom': 'Custom Date Range Report',
+                'all': 'Complete Attendance Report'
+            };
+            
+            alert(`Generating ${reports[type]}...\n\nThis would normally download a PDF or Excel file with attendance data.`);
+        }
+
+        // Initialize charts
+        function initializeCharts() {
+            // Attendance Trend Chart
+            const attendanceCtx = document.getElementById('attendanceTrendChart').getContext('2d');
+            new Chart(attendanceCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                    datasets: [{
+                        label: 'Attendance %',
+                        data: [85, 88, 92, 87, 89, 86],
+                        borderColor: 'hsl(221, 83%, 53%)',
+                        backgroundColor: 'hsl(221, 83%, 53%, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+
+            // Department Chart
+            const deptCtx = document.getElementById('departmentChart').getContext('2d');
+            new Chart(deptCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Computer Science', 'Mechanical', 'Electronics', 'Civil'],
+                    datasets: [{
+                        data: [35, 25, 20, 20],
+                        backgroundColor: [
+                            'hsl(221, 83%, 53%)',
+                            'hsl(142, 76%, 36%)',
+                            'hsl(38, 92%, 50%)',
+                            'hsl(0, 84%, 60%)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize page
+        function initializePage() {
+            // Check authentication
+            if (!checkAuth()) return;
+            
+            initializeCharts();
+        }
+
+        // Call initialize on load
+        initializePage();
+
+        function showTeacherModal() {
+          document.getElementById('teacherModal').classList.remove('hidden');
+          fetch('/api/teachers')
+            .then(res => res.json())
+            .then(teachers => {
+              const list = document.getElementById('teacherList');
+              list.innerHTML = '';
+              teachers.forEach(t => {
+                list.innerHTML += `<div class='p-2 border-b'><strong>${t.teacher_id}</strong>: ${t.name}</div>`;
+              });
+            });
+        }
+        function closeTeacherModal() {
+          document.getElementById('teacherModal').classList.add('hidden');
+        }
+
+        function loadClassOptions() {
+            const date = document.getElementById('reportDate').value;
+            fetch(`/api/admin/attendance/${date}/summary`)
+                .then(res => res.json())
+                .then(summary => {
+                    const select = document.getElementById('reportClass');
+                    select.innerHTML = '';
+                    summary.forEach(c => {
+                        select.innerHTML += `<option value="${c.class_id}">Class ${c.class_id}</option>`;
+                    });
+                });
+        }
+        document.getElementById('reportDate').addEventListener('change', loadClassOptions);
+        document.addEventListener('DOMContentLoaded', loadClassOptions);
+
+        function viewAttendanceReport() {
+            const date = document.getElementById('reportDate').value;
+            const classId = document.getElementById('reportClass').value;
+            fetch(`/api/admin/attendance/${classId}/${date}/details`)
+                .then(res => res.json())
+                .then(details => {
+                    const studentIds = details.map(d => d.student_id);
+                    fetch(`/api/students`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ ids: studentIds })
+                    })
+                    .then(res => res.json())
+                    .then(studentDetails => {
+                        let html = '<h4 class="font-bold mb-2">Attendance Details</h4>';
+                        html += '<table class="w-full border"><thead><tr><th>Roll No</th><th>Name</th><th>Status</th></tr></thead><tbody>';
+                        details.forEach(d => {
+                            const student = studentDetails.find(s => s.id === d.student_id) || {};
+                            html += `<tr><td>${student.roll_no || ''}</td><td>${student.name || ''}</td><td>${d.status}</td></tr>`;
+                        });
+                        html += '</tbody></table>';
+                        document.getElementById('attendanceReportDetails').innerHTML = html;
+                        document.getElementById('downloadBtn').classList.remove('hidden');
+                    });
+                });
+        }
+        function downloadAttendanceReport() {
+            const date = document.getElementById('reportDate').value;
+            const classId = document.getElementById('reportClass').value;
+            window.location.href = `/api/admin/attendance/${classId}/${date}/download`;
+        }
+    </script>
+</body>
+</html>
